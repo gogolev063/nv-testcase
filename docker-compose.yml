@@ -1,0 +1,51 @@
+version: "3.11"
+
+services:
+    db:
+        image: postgres:alpine
+        container_name: db
+        env_file: .env
+        volumes:
+            - /opt/share/${LOGNAME}/psql_data:/var/lib/postgresql/data
+            - ./dumps:/var/www/dumps
+        ports:
+            - 0.0.0.0:${POSTGRES_EXTERNAL_PORT}:5432
+        networks:
+            - default_net
+        restart: 'unless-stopped'
+        logging:
+            options:
+                tag: "{{.Name}}/{{.ImageName}}/{{.ID}}/"
+
+    client_app:
+        build: 
+            context: ./client_app
+        image: client_app
+        container_name: client_app
+        env_file: .env
+        networks:
+            - default_net
+        restart: unless-stopped
+        logging:
+            options:
+                tag: "{{.Name}}/{{.ImageName}}/{{.ID}}/"
+
+    web_service:
+        build: 
+            context: ./web_service
+        environment:
+            APP_PORT: "${WEB_SERVICE_PORT}"
+        image: web_service
+        container_name: web_service
+        env_file: .env
+        ports:
+            - ${WEB_SERVICE_PORT}:${WEB_SERVICE_PORT}
+        networks:
+            - default_net
+        restart: unless-stopped
+        logging:
+            options:
+                tag: "{{.Name}}/{{.ImageName}}/{{.ID}}/"
+
+networks:
+    default_net:
