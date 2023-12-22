@@ -8,7 +8,7 @@ This application consists of 3 parts, each of which runs in its own docker conta
 Implements the following endpoints:
 - POST `/new`
 
-    Сохраняет запись в базу данных и присваивает ей уникальный идентификатор uuid. Пример тела запроса:
+    Saves an entry to the database and assigns it a unique uuid. Example of the request body:
     ```json
     [
         {"uuid": "e48d41d0-6e53-490a-9d9a-fd4337f28038", "text": "test example"},
@@ -18,7 +18,7 @@ Implements the following endpoints:
 
 -  GET `/all`
 
-    Отдаёт все добавленные записи, пример тела ответа:
+    Returns all the added entries, an example of the response body:
     ```json
     [
         {"uuid": "e48d41d0-6e53-490a-9d9a-fd4337f28038", "text": "test example"},
@@ -28,14 +28,14 @@ Implements the following endpoints:
 
 - GET `/<uuid>`
 
-    Отдаёт конкретную запись по запрошенному uuid. Если записи не существует, отдаёт HTTP 404. Пример успешного ответа:
+    Returns a specific record by the requested uuid. If the record does not exist, it returns HTTP 404. Example of a successful response:
     ```json
     {"uuid": "e48d41d0-6e53-490a-9d9a-fd4337f28038", "text": "test example"}
     ```
 
 - GET `/<count>`
 
-    Отдаёт запрошенное в <count> количество записей. Пример успешного ответа:
+    Returns the number of records requested in <count>. Example of a successful response:
     ```json
     [
         {"uuid": "e48d41d0-6e53-490a-9d9a-fd4337f28038", "text": "test example"},
