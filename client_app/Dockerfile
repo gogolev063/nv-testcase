@@ -9,4 +9,4 @@ COPY . .
 
 ENV TZ=Europe/Moscow
 
-CMD [ "python", "./main.py" ]
+CMD [ "python", "-u", "./main.py" ]

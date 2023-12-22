@@ -1,2 +1,6 @@
+sqlalchemy
+sqlalchemy_utils
+psycopg2
 fastapi == 0.105.0
 uvicorn
+asyncpg

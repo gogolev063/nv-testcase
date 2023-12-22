@@ -1,4 +1,4 @@
-version: "3.11"
+version: "3.8"
 
 services:
     db:
@@ -7,25 +7,16 @@ services:
         env_file: .env
         volumes:
             - /opt/share/${LOGNAME}/psql_data:/var/lib/postgresql/data
-            - ./dumps:/var/www/dumps
         ports:
             - 0.0.0.0:${POSTGRES_EXTERNAL_PORT}:5432
         networks:
             - default_net
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_USER}"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
         restart: 'unless-stopped'
-        logging:
-            options:
-                tag: "{{.Name}}/{{.ImageName}}/{{.ID}}/"
-
-    client_app:
-        build: 
-            context: ./client_app
-        image: client_app
-        container_name: client_app
-        env_file: .env
-        networks:
-            - default_net
-        restart: unless-stopped
         logging:
             options:
                 tag: "{{.Name}}/{{.ImageName}}/{{.ID}}/"
@@ -40,6 +31,14 @@ services:
         env_file: .env
         ports:
             - ${WEB_SERVICE_PORT}:${WEB_SERVICE_PORT}
+        depends_on:
+          db:
+            condition: service_healthy
+        healthcheck:
+            test: ["CMD", "curl", "-f", "http://localhost:${WEB_SERVICE_PORT}"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
         networks:
             - default_net
         restart: unless-stopped
@@ -47,5 +46,23 @@ services:
             options:
                 tag: "{{.Name}}/{{.ImageName}}/{{.ID}}/"
 
+
+    client_app:
+        build: 
+            context: ./client_app
+        image: client_app
+        container_name: client_app
+        env_file: .env
+        networks:
+            - default_net
+        depends_on:
+          web_service:
+            condition: service_healthy
+        restart: unless-stopped
+        logging:
+            options:
+                tag: "{{.Name}}/{{.ImageName}}/{{.ID}}/"
+        ports:
+            - ${DEBUG_PORT}:${DEBUG_PORT}
 networks:
     default_net:
